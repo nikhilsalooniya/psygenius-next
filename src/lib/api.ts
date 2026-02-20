@@ -8,6 +8,9 @@ import type {
   AnnouncementRequest,
   AnnouncementResponse,
   Ticket,
+  SubjectTopic,
+  CreateTopicRequest,
+  GenerateJobResponse,
 } from "./types";
 
 const API_BASE = "https://api.psygenius.mentoragenius.de";
@@ -121,4 +124,52 @@ export const api = {
       "/admin/profile",
       { method: "PUT", body: JSON.stringify(data) }
     ),
+
+  // ============================================================
+  // V2 Module Management
+  // ============================================================
+
+  createV2Subject: (formData: FormData) =>
+    fetchApiMultipart<{ success: boolean; message: string; data: Subject }>("/admin/v2/subject", formData),
+
+  getTopics: (subjectId: number) =>
+    fetchApi<{ success: boolean; message: string; data: SubjectTopic[] }>(`/admin/v2/subject/${subjectId}/topics`),
+
+  addTopic: (subjectId: number, data: CreateTopicRequest) =>
+    fetchApi<{ success: boolean; message: string; data: SubjectTopic }>(`/admin/v2/subject/${subjectId}/topic`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  updateTopic: (subjectId: number, topicId: number, data: Partial<CreateTopicRequest & { isActive: boolean }>) =>
+    fetchApi<{ success: boolean; message: string; data: SubjectTopic }>(
+      `/admin/v2/subject/${subjectId}/topic/${topicId}`,
+      { method: "PUT", body: JSON.stringify(data) }
+    ),
+
+  deleteTopic: (subjectId: number, topicId: number) =>
+    fetchApi<{ success: boolean; message: string }>(`/admin/v2/subject/${subjectId}/topic/${topicId}`, {
+      method: "DELETE",
+    }),
+
+  uploadTopicPDF: (subjectId: number, topicId: number, formData: FormData) =>
+    fetchApiMultipart<{ success: boolean; message: string; data: SubjectTopic }>(
+      `/admin/v2/subject/${subjectId}/topic/${topicId}/pdf`,
+      formData
+    ),
+
+  uploadMockPDFs: (subjectId: number, formData: FormData) =>
+    fetchApiMultipart<{ success: boolean; message: string }>(`/admin/v2/subject/${subjectId}/mock-pdf`, formData),
+
+  generateTopicQuestions: (topicId: number, count = 100) =>
+    fetchApi<GenerateJobResponse>(`/admin/v2/generate/topic/${topicId}`, {
+      method: "POST",
+      body: JSON.stringify({ count }),
+    }),
+
+  generateMockQuestions: (subjectId: number) =>
+    fetchApi<GenerateJobResponse>(`/admin/v2/generate/mock/${subjectId}`, { method: "POST" }),
+
+  generateTopicVectors: (topicId: number) =>
+    fetchApi<GenerateJobResponse>(`/admin/v2/vector/topic/${topicId}`, { method: "POST" }),
 };

@@ -145,6 +145,43 @@ export interface Subject {
   purchasedUsers: PurchasedUser[];
 }
 
+// V2 Module / Topic types
+export interface SubjectTopic {
+  id: number;
+  subjectId: number;
+  name: string;
+  pdfId: number | null;
+  categoryId: number | null;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  // Computed fields from admin endpoint
+  pdfUploaded: boolean;
+  questionsGenerated: number;
+  embeddingsGenerated: number;
+}
+
+export interface CreateTopicRequest {
+  name: string;
+  order: number;
+}
+
+export interface GenerateJobResponse {
+  success: boolean;
+  message: string;
+  count?: number;
+}
+
+export interface V2SubjectCreateRequest {
+  subjectName: string;
+  description: string;
+  author?: string;
+  price?: number;
+  discount?: number;
+  currency?: string;
+}
+
 // Announcements
 export interface AnnouncementRequest {
   title: string;
