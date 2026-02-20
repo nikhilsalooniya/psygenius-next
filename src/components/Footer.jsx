@@ -33,8 +33,8 @@ export function Footer() {
         <div className="flex flex-col items-center gap-4 border-t border-gray-200 py-8 sm:flex-row sm:justify-between">
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
             <Link href="/impressum" className="hover:text-gray-900 transition-colors">Impressum</Link>
-            <Link href="/datenschutz" className="hover:text-gray-900 transition-colors">Datenschutz</Link>
-            <Link href="/agb" className="hover:text-gray-900 transition-colors">AGB</Link>
+            <Link href="/datenschutz" className="hover:text-gray-900 transition-colors">Datenschutzerklärung</Link>
+            <Link href="/agb" className="hover:text-gray-900 transition-colors">Nutzungsbedingungen</Link>
             <a href="mailto:support@mentoragenius.de" className="hover:text-gray-900 transition-colors">support@mentoragenius.de</a>
           </nav>
           <p className="text-sm text-gray-400">
