@@ -13,6 +13,13 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
   const [subjectMap, setSubjectMap] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const copyId = () => {
+    navigator.clipboard.writeText(id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     Promise.all([
@@ -53,6 +60,19 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
       {/* Student Info */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h1 className="text-xl font-bold text-gray-900 mb-4">{student.fullName}</h1>
+
+        {/* User ID with copy button */}
+        <div className="flex items-center gap-2 mb-4 p-2.5 bg-gray-50 rounded-lg border border-gray-200 w-fit">
+          <span className="text-xs text-gray-500 font-medium">User ID:</span>
+          <span className="font-mono text-xs text-gray-800">{id}</span>
+          <button
+            onClick={copyId}
+            className="ml-1 px-2 py-0.5 text-xs rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-600 transition-colors"
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="text-gray-500">Email:</span>{" "}
