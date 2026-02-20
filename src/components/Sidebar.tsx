@@ -11,6 +11,7 @@ const navItems = [
   { label: "Announcements", href: "/admin/announcements", icon: "📢" },
   { label: "Modules", href: "/admin/modules", icon: "📚" },
   { label: "Tickets", href: "/admin/tickets", icon: "🎫" },
+  { label: "Settings", href: "/admin/settings", icon: "⚙️" },
 ];
 
 export function Sidebar() {

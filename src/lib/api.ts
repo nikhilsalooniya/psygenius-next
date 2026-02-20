@@ -112,4 +112,13 @@ export const api = {
       method: "PUT",
       body: JSON.stringify({ status }),
     }),
+
+  getProfile: () =>
+    fetchApi<{ success: boolean; data: { id: string; name: string; email: string; role: string } }>("/admin/profile"),
+
+  updateProfile: (data: { name?: string; email?: string; currentPassword: string; newPassword?: string }) =>
+    fetchApi<{ success: boolean; message: string; data: { id: string; name: string; email: string; role: string } }>(
+      "/admin/profile",
+      { method: "PUT", body: JSON.stringify(data) }
+    ),
 };
