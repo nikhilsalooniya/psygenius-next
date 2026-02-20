@@ -13,8 +13,7 @@ export default function Contact() {
 
         const formData = new FormData(event.currentTarget);
         const body = {
-            firstName: formData.get("first-name"),
-            lastName: formData.get("last-name"),
+            name: formData.get("name"),
             email: formData.get("email"),
             message: formData.get("message"),
         };
@@ -52,40 +51,26 @@ export default function Contact() {
                 />
             </div>
             <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">Kontakt</h2>
+                <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">Kontaktformular</h2>
                 <p className="mt-2 text-lg/8 text-gray-600">Hast du Fragen oder Feedback? Schreib uns einfach.</p>
             </div>
             <form onSubmit={handleSubmit} className="mx-auto mt-16 max-w-xl sm:mt-20">
-                <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-x-8 gap-y-6">
                     <div>
-                        <label htmlFor="first-name" className="block text-sm/6 font-semibold text-gray-900">
-                            Vorname
+                        <label htmlFor="name" className="block text-sm/6 font-semibold text-gray-900">
+                            Name
                         </label>
                         <div className="mt-2.5">
                             <input
-                                id="first-name"
-                                name="first-name"
+                                id="name"
+                                name="name"
                                 type="text"
-                                autoComplete="given-name"
+                                autoComplete="name"
                                 className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
                             />
                         </div>
                     </div>
                     <div>
-                        <label htmlFor="last-name" className="block text-sm/6 font-semibold text-gray-900">
-                            Nachname
-                        </label>
-                        <div className="mt-2.5">
-                            <input
-                                id="last-name"
-                                name="last-name"
-                                type="text"
-                                autoComplete="family-name"
-                                className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
-                            />
-                        </div>
-                    </div>
-                    <div className="sm:col-span-2">
                         <label htmlFor="email" className="block text-sm/6 font-semibold text-gray-900">
                             E-Mail
                         </label>
@@ -100,7 +85,7 @@ export default function Contact() {
                             />
                         </div>
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                         <label htmlFor="message" className="block text-sm/6 font-semibold text-gray-900">
                             Nachricht
                         </label>
