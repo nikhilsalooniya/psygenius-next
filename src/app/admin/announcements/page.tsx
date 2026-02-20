@@ -1,16 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { FormField } from "@/components/FormField";
+import type { Subject } from "@/lib/types";
+
+type TargetMode = "all" | "module" | "specific";
 
 export default function AnnouncementsPage() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [target, setTarget] = useState<"all" | "specific">("all");
+  const [target, setTarget] = useState<TargetMode>("all");
   const [userIds, setUserIds] = useState("");
+  const [selectedModuleId, setSelectedModuleId] = useState<number | "">("");
+  const [modules, setModules] = useState<Subject[]>([]);
+  const [modulesLoading, setModulesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  useEffect(() => {
+    setModulesLoading(true);
+    api
+      .getSubjects()
+      .then((res) => setModules(res.data))
+      .catch(() => {})
+      .finally(() => setModulesLoading(false));
+  }, []);
+
+  const selectedModule = modules.find((m) => m.id === selectedModuleId);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,19 +35,29 @@ export default function AnnouncementsPage() {
     setLoading(true);
 
     try {
-      const targetAudience =
-        target === "all"
-          ? ("all" as const)
-          : userIds
-              .split(",")
-              .map((id) => id.trim())
-              .filter(Boolean);
+      let targetAudience: "all" | string[];
+
+      if (target === "all") {
+        targetAudience = "all";
+      } else if (target === "module") {
+        if (!selectedModule) throw new Error("Please select a module.");
+        const ids = selectedModule.purchasedUsers.map((u) => u.userId);
+        if (ids.length === 0) throw new Error("No users have purchased this module yet.");
+        targetAudience = ids;
+      } else {
+        targetAudience = userIds
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean);
+        if (targetAudience.length === 0) throw new Error("Please enter at least one user ID.");
+      }
 
       const res = await api.sendAnnouncement({ title, message, targetAudience });
-      setResult({ type: "success", text: `Announcement sent to ${res.sentTo} users` });
+      setResult({ type: "success", text: `Announcement sent to ${res.sentTo} users.` });
       setTitle("");
       setMessage("");
       setUserIds("");
+      setSelectedModuleId("");
     } catch (err) {
       setResult({
         type: "error",
@@ -46,7 +73,7 @@ export default function AnnouncementsPage() {
       <h1 className="text-xl font-bold text-gray-900 mb-6">Send Announcement</h1>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <FormField
             label="Title"
             value={title}
@@ -64,34 +91,67 @@ export default function AnnouncementsPage() {
             placeholder="Write your announcement..."
           />
 
+          {/* Target audience */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Target Audience
             </label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  name="target"
-                  checked={target === "all"}
-                  onChange={() => setTarget("all")}
-                  className="accent-primary"
-                />
-                All Users
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  name="target"
-                  checked={target === "specific"}
-                  onChange={() => setTarget("specific")}
-                  className="accent-primary"
-                />
-                Specific Users
-              </label>
+            <div className="flex flex-wrap gap-4">
+              {(["all", "module", "specific"] as TargetMode[]).map((mode) => (
+                <label key={mode} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="target"
+                    checked={target === mode}
+                    onChange={() => {
+                      setTarget(mode);
+                      setResult(null);
+                    }}
+                    className="accent-primary"
+                  />
+                  {mode === "all" && "All Users"}
+                  {mode === "module" && "By Module"}
+                  {mode === "specific" && "Specific User IDs"}
+                </label>
+              ))}
             </div>
           </div>
 
+          {/* Module picker */}
+          {target === "module" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Select Module
+              </label>
+              {modulesLoading ? (
+                <p className="text-sm text-gray-400">Loading modules…</p>
+              ) : (
+                <select
+                  value={selectedModuleId}
+                  onChange={(e) => setSelectedModuleId(Number(e.target.value) || "")}
+                  required
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="">— Choose a module —</option>
+                  {modules.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.subjectName} ({m.purchaseCount} purchaser{m.purchaseCount !== 1 ? "s" : ""})
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {selectedModule && (
+                <p className="mt-2 text-xs text-gray-500">
+                  {selectedModule.purchasedUsers.length === 0
+                    ? "No users have purchased this module yet."
+                    : `Will notify ${selectedModule.purchasedUsers.length} user${selectedModule.purchasedUsers.length !== 1 ? "s" : ""} who purchased "${selectedModule.subjectName}".`}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Manual user IDs */}
           {target === "specific" && (
             <FormField
               label="User IDs (comma-separated UUIDs)"
@@ -119,7 +179,7 @@ export default function AnnouncementsPage() {
             disabled={loading}
             className="bg-primary text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {loading ? "Sending..." : "Send Announcement"}
+            {loading ? "Sending…" : "Send Announcement"}
           </button>
         </form>
       </div>

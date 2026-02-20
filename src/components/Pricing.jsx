@@ -1,244 +1,161 @@
 import { CheckIcon } from '@heroicons/react/20/solid'
 
-const frequencies = [
-  { value: 'monthly', label: 'Monthly', priceSuffix: '/month' },
-  { value: 'annually', label: 'Annually', priceSuffix: '/year' },
-]
 const tiers = [
   {
     name: 'Einführung in die Psychologie',
     id: 'p1',
     href: '#',
     price: { monthly: '€9.99', annually: '€9.99' },
-    // description: 'The essentials to provide your best work for clients.',
+    originalPrice: '€14.99',
     features: [
-      'Einmal kaufen, dauerhaft nutzen ',
+      'Einmal kaufen, dauerhaft nutzen',
       'Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)',
       'Tageschallenge mit 10 adaptiven Fragen',
       'Quizmodus, Tageschallenge & Probeklausuren',
       'KI erkennt deine Lernlücken',
       'Prüfungsnahe Fragen & realistisches Zeitlimit',
-      'KI-Erklärungen zu allen Fragen & Begriffen'
+      'KI-Erklärungen zu allen Fragen & Begriffen',
     ],
-    featured: false,
-    cta: 'Buy module',
+    cta: 'Modul kaufen',
   },
   {
     name: 'Statistik',
     id: 'p2',
     href: '#',
     price: { monthly: '€9.99', annually: '€9.99' },
-    // description: 'The essentials to provide your best work for clients.',
+    originalPrice: '€14.99',
     features: [
-      'Einmal kaufen, dauerhaft nutzen ',
+      'Einmal kaufen, dauerhaft nutzen',
       'Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)',
       'Tageschallenge mit 10 adaptiven Fragen',
       'Quizmodus, Tageschallenge & Probeklausuren',
       'KI erkennt deine Lernlücken',
       'Prüfungsnahe Fragen & realistisches Zeitlimit',
-      'KI-Erklärungen zu allen Fragen & Begriffen'
+      'KI-Erklärungen zu allen Fragen & Begriffen',
     ],
-    featured: false,
-    cta: 'Buy module',
+    cta: 'Modul kaufen',
   },
   {
     name: 'Entwicklungspsychologie',
     id: 'p3',
     href: '#',
     price: { monthly: '€9.99', annually: '€9.99' },
-    // description: 'The essentials to provide your best work for clients.',
+    originalPrice: '€14.99',
     features: [
-      'Einmal kaufen, dauerhaft nutzen ',
+      'Einmal kaufen, dauerhaft nutzen',
       'Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)',
       'Tageschallenge mit 10 adaptiven Fragen',
       'Quizmodus, Tageschallenge & Probeklausuren',
       'KI erkennt deine Lernlücken',
       'Prüfungsnahe Fragen & realistisches Zeitlimit',
-      'KI-Erklärungen zu allen Fragen & Begriffen'
+      'KI-Erklärungen zu allen Fragen & Begriffen',
     ],
-    featured: false,
-    cta: 'Buy module',
+    cta: 'Modul kaufen',
   },
   {
     name: 'Sozialpsychologie',
     id: 'p4',
     href: '#',
     price: { monthly: '€9.99', annually: '€9.99' },
-    // description: 'The essentials to provide your best work for clients.',
+    originalPrice: '€14.99',
     features: [
-      'Einmal kaufen, dauerhaft nutzen ',
+      'Einmal kaufen, dauerhaft nutzen',
       'Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)',
       'Tageschallenge mit 10 adaptiven Fragen',
       'Quizmodus, Tageschallenge & Probeklausuren',
       'KI erkennt deine Lernlücken',
       'Prüfungsnahe Fragen & realistisches Zeitlimit',
-      'KI-Erklärungen zu allen Fragen & Begriffen'
+      'KI-Erklärungen zu allen Fragen & Begriffen',
     ],
-    featured: false,
-    cta: 'Buy module',
+    cta: 'Modul kaufen',
   },
-  // {
-  //   name: 'Statistik',
-  //   id: 'tier-startup',
-  //   href: '#',
-  //   price: { monthly: '$14.99', annually: '$299' },
-  //   // description: 'A plan that scales with your rapidly growing business.',
-  //   features: [
-  //     '25 products',
-  //     'Up to 10,000 subscribers',
-  //     'Advanced analytics',
-  //     '24-hour support response time',
-  //     'Marketing automations',
-  //   ],
-  //   featured: false,
-  //   cta: 'Buy module',
-  // },
-  // {
-  //   name: 'Sozialpsychologie',
-  //   id: 'tier-enterprise',
-  //   href: '#',
-  //   price: { monthly: '$14.99', annually: '$299' },
-  //   // description: 'Dedicated support and infrastructure for your company.',
-  //   features: [
-  //     'Unlimited products',
-  //     'Unlimited subscribers',
-  //     'Advanced analytics',
-  //     '1-hour, dedicated support response time',
-  //     'Marketing automations',
-  //     'Custom reporting tools',
-  //   ],
-  //   featured: false,
-  //   cta: 'Buy module',
-  // },
-  // {
-  //   name: 'Entwicklungspsychologie',
-  //   id: 'tier-enterprise-2',
-  //   href: '#',
-  //   price: { monthly: '$14.99', annually: '$299' },
-  //   // description: 'Dedicated support and infrastructure for your company.',
-  //   features: [
-  //     'Unlimited products',
-  //     'Unlimited subscribers',
-  //     'Advanced analytics',
-  //     '1-hour, dedicated support response time',
-  //     'Marketing automations',
-  //     'Custom reporting tools',
-  //   ],
-  //   featured: false,
-  //   cta: 'Buy module',
-  // },
 ]
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export function Pricing() {
   return (
-      <form id="pricing-section" className="relative group/tiers bg-white py-24 sm:py-32">
-        <img
-          src="/Mentori-Thumbs-Up.png"
-          alt=""
-          className="pointer-events-none hidden md:block absolute z-20 top-16 left-6 md:left-10 lg:left-[12%] h-36 md:h-48 lg:h-60"
-        />
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-base/7 font-semibold text-indigo-600">Preise</h2>
-            <p className="mt-2 text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-6xl">
-              Preise für Module
-            </p>
-          </div>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl/8">
-            Kein Abo, keine versteckten Kosten. Du zahlst nur für die Module, die du wirklich brauchst – einmal kaufen, dauerhaft nutzen.
-          </p>
-          <div className="mt-16 flex justify-center">
-            <fieldset aria-label="Payment frequency" className={"hidden"}>
-              <div className="grid grid-cols-2 gap-x-1 rounded-full p-1 text-center text-xs/5 font-semibold inset-ring inset-ring-gray-200">
-                <label className="group relative rounded-full px-2.5 py-1 has-checked:bg-indigo-600">
-                  <input
-                      defaultValue="monthly"
-                      defaultChecked
-                      name="frequency"
-                      type="radio"
-                      className="absolute inset-0 appearance-none rounded-full"
-                  />
-                  <span className="text-gray-500 group-has-checked:text-white">Monthly</span>
-                </label>
-                <label className="group relative rounded-full px-2.5 py-1 has-checked:bg-indigo-600">
-                  <input
-                      defaultValue="annually"
-                      name="frequency"
-                      type="radio"
-                      className="absolute inset-0 appearance-none rounded-full"
-                  />
-                  <span className="text-gray-500 group-has-checked:text-white">Annually</span>
-                </label>
-              </div>
-            </fieldset>
-          </div>
-          <div className="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-            {tiers.map((tier) => (
-                <div
-                    key={tier.id}
-                    data-featured={tier.featured ? 'true' : undefined}
-                    className="group/tier rounded-3xl p-8 ring-1 ring-gray-200 data-featured:bg-gray-900 data-featured:ring-gray-900 xl:p-10"
-                >
-                  <h3
-                      id={`tier-${tier.id}`}
-                      className="text-lg/8 font-semibold text-gray-900 group-data-featured/tier:text-white"
-                  >
-                    {tier.name}
-                  </h3>
-                  <p className="mt-4 text-sm/6 text-gray-600 group-data-featured/tier:text-gray-300">{tier.description}</p>
-                  {typeof tier.price === 'string' ? (
-                      <p className="mt-6 text-4xl font-semibold tracking-tight text-gray-900 group-data-featured/tier:text-white">
-                        {tier.price}
-                      </p>
-                  ) : (
-                      <>
-                        <p className="mt-6 flex items-baseline gap-x-1 group-not-has-[[name=frequency][value=monthly]:checked]/tiers:hidden">
-                    <span className="text-4xl font-semibold tracking-tight text-gray-900 group-data-featured/tier:text-white">
-                      {tier.price.monthly}
-                    </span>
-                        </p>
-                        <p className="mt-6 flex items-baseline gap-x-1 group-not-has-[[name=frequency][value=annually]:checked]/tiers:hidden">
-                    <span className="text-4xl font-semibold tracking-tight text-gray-900 group-data-featured/tier:text-white">
-                      {tier.price.annually}
-                    </span>
-                          <span className="text-sm/6 font-semibold text-gray-600 group-data-featured/tier:text-gray-300">
-                      /year
-                    </span>
-                        </p>
-                      </>
-                  )}
+    <section
+      id="pricing-section"
+      className="relative overflow-hidden bg-slate-50 py-24 sm:py-32"
+    >
+      {/* Decorative background blobs */}
+      <div className="pointer-events-none absolute -top-40 left-1/4 h-125 w-125 rounded-full bg-purple-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 h-100 w-100 rounded-full bg-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 left-0 h-75 w-75 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl" />
 
-                  {/*<button*/}
-                  {/*  value={tier.id}*/}
-                  {/*  name="tier"*/}
-                  {/*  type="submit"*/}
-                  {/*  aria-describedby={`tier-${tier.id}`}*/}
-                  {/*  className="mt-6 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm/6 font-semibold text-white shadow-xs group-data-featured/tier:bg-white/10 group-data-featured/tier:inset-ring group-data-featured/tier:inset-ring-white/5 hover:bg-indigo-500 group-data-featured/tier:hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 group-data-featured/tier:focus-visible:outline-white/75"*/}
-                  {/*>*/}
-                  {/*  {tier.cta}*/}
-                  {/*</button>*/}
-                  <ul
-                      role="list"
-                      className="mt-8 space-y-3 text-sm/6 text-gray-600 group-data-featured/tier:text-gray-300 xl:mt-10"
-                  >
-                    {tier.features.map((feature) => (
-                        <li key={feature} className="flex gap-x-3">
-                          <CheckIcon
-                              aria-hidden="true"
-                              className={classNames(tier.featured ? 'text-white' : 'text-indigo-600', 'h-6 w-5 flex-none')}
-                          />
-                          {feature}
-                        </li>
-                    ))}
-                  </ul>
-                </div>
-            ))}
-          </div>
+      <img
+        src="/Mentori-Thumbs-Up.png"
+        alt=""
+        className="pointer-events-none absolute z-20 top-16 left-6 md:left-10 lg:left-[12%] h-36 md:h-48 lg:h-60 hidden md:block drop-shadow-2xl"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Header */}
+        <div className="mx-auto max-w-4xl text-center">
+          <span className="inline-block rounded-full bg-purple-500/20 px-4 py-1.5 text-sm font-semibold text-purple-300 ring-1 ring-purple-400/40">
+            Preise
+          </span>
+          <h2 className="mt-4 text-5xl font-bold tracking-tight text-white sm:text-6xl">
+            Preise für Module
+          </h2>
         </div>
-      </form>
+        <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-purple-200/70">
+          Kein Abo, keine versteckten Kosten. Du zahlst nur für die Module, die du wirklich brauchst – einmal kaufen, dauerhaft nutzen.
+        </p>
+
+        {/* Cards */}
+        <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-6 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+          {tiers.map((tier) => (
+            <div
+              key={tier.id}
+              className="relative rounded-3xl p-px"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 100%)',
+              }}
+            >
+              <div className="relative h-full rounded-3xl bg-white/5 backdrop-blur-2xl p-8 xl:p-10 flex flex-col">
+                {/* Discount badge */}
+                <span className="absolute top-6 right-6 rounded-full bg-linear-to-r from-purple-500 to-indigo-500 px-3 py-1 text-xs font-bold text-white shadow-lg shadow-purple-900/40">
+                  33% RABATT
+                </span>
+
+                {/* Module name */}
+                <h3 className="text-lg font-semibold text-white pr-24">{tier.name}</h3>
+
+                {/* Price block */}
+                <div className="mt-6 flex items-baseline gap-x-3">
+                  <span className="text-xl font-medium line-through text-purple-300/50">
+                    {tier.originalPrice}
+                  </span>
+                  <span className="text-5xl font-bold tracking-tight text-white">
+                    {tier.price.monthly}
+                  </span>
+                </div>
+
+                {/* Divider */}
+                <div className="mt-6 h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
+
+                {/* Features */}
+                <ul role="list" className="mt-6 flex-1 space-y-3">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-x-3 text-sm text-purple-100/80">
+                      <CheckIcon className="mt-0.5 h-5 w-5 flex-none text-purple-400" aria-hidden="true" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <a
+                  href={tier.href}
+                  className="mt-8 block w-full rounded-xl bg-linear-to-r from-primary to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-purple-900/50 transition-all duration-200 hover:from-[#8570d8] hover:to-indigo-500 hover:shadow-purple-700/50"
+                >
+                  {tier.cta}
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }

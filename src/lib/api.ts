@@ -7,9 +7,10 @@ import type {
   Subject,
   AnnouncementRequest,
   AnnouncementResponse,
+  Ticket,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.psygenius.mentoragenius.de";
+const API_BASE = "https://api.psygenius.mentoragenius.de";
 
 async function fetchApi<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAccessToken();
@@ -101,5 +102,14 @@ export const api = {
     fetchApi<AnnouncementResponse>("/admin/announcements/send", {
       method: "POST",
       body: JSON.stringify(data),
+    }),
+
+  getTickets: () =>
+    fetchApi<{ success: boolean; data: Ticket[] }>("/admin/tickets"),
+
+  updateTicketStatus: (id: number, status: Ticket["status"]) =>
+    fetchApi<{ success: boolean; data: Ticket }>(`/admin/tickets/${id}/status`, {
+      method: "PUT",
+      body: JSON.stringify({ status }),
     }),
 };
