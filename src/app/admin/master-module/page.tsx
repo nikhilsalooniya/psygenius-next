@@ -24,13 +24,15 @@ function StepIndicator({ current }: { current: Step }) {
               current === s.n
                 ? "bg-primary text-white"
                 : current > s.n
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 text-gray-500"
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 text-gray-500"
             }`}
           >
             {current > s.n ? "✓" : s.n}
           </div>
-          <span className={`text-sm font-medium ${current >= s.n ? "text-gray-900" : "text-gray-400"}`}>
+          <span
+            className={`text-sm font-medium ${current >= s.n ? "text-gray-900" : "text-gray-400"}`}
+          >
             {s.label}
           </span>
           {i < steps.length - 1 && <div className="w-8 h-0.5 bg-gray-200 mx-1" />}
@@ -41,11 +43,7 @@ function StepIndicator({ current }: { current: Step }) {
 }
 
 // ─── Step 1 ────────────────────────────────────────────────────────────────────
-function Step1({
-  onCreated,
-}: {
-  onCreated: (subjectId: number) => void;
-}) {
+function Step1({ onCreated }: { onCreated: (subjectId: number) => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -73,33 +71,62 @@ function Step1({
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Module Name *</label>
-        <input name="subjectName" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        <input
+          name="subjectName"
+          required
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-        <textarea name="description" required rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        <textarea
+          name="description"
+          required
+          rows={3}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
-        <input name="author" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+        <input
+          name="author"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-          <input name="price" type="number" step="0.01" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          <input
+            name="price"
+            type="number"
+            step="0.01"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-          <input name="discount" type="number" step="0.01" min="0" max="100" defaultValue="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          <input
+            name="discount"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
+            defaultValue="0"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-        <select name="currency" defaultValue="EUR" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        <select
+          name="currency"
+          defaultValue="EUR"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        >
           <option value="EUR">EUR</option>
           <option value="USD">USD</option>
           <option value="INR">INR</option>
@@ -108,7 +135,13 @@ function Step1({
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
-        <input ref={fileRef} name="coverImage" type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-light file:text-primary" />
+        <input
+          ref={fileRef}
+          name="coverImage"
+          type="file"
+          accept="image/*"
+          className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-light file:text-primary"
+        />
       </div>
 
       <button
@@ -139,14 +172,34 @@ function Step2({
   const [error, setError] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SubjectTopic | null>(null);
+  const [renamingId, setRenamingId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+  async function handleRename(topic: SubjectTopic) {
+    if (!renameValue.trim() || renameValue === topic.name) {
+      setRenamingId(null);
+      return;
+    }
+    try {
+      await api.updateTopic(subjectId, topic.id, { name: renameValue.trim() });
+      setTopics(topics.map((t) => (t.id === topic.id ? { ...t, name: renameValue.trim() } : t)));
+    } catch {
+      alert("Failed to rename topic");
+    } finally {
+      setRenamingId(null);
+    }
+  }
 
   async function handleAddTopic() {
     if (!newTopicName.trim()) return;
     setAdding(true);
     setError(null);
     try {
-      const res = await api.addTopic(subjectId, { name: newTopicName.trim(), order: topics.length });
+      const res = await api.addTopic(subjectId, {
+        name: newTopicName.trim(),
+        order: topics.length,
+      });
       setTopics([...topics, res.data]);
       setNewTopicName("");
     } catch (err: unknown) {
@@ -163,7 +216,9 @@ function Step2({
       fd.append("pdfFile", file);
       fd.append("subjectId", subjectId.toString());
       const res = await api.uploadTopicPDF(subjectId, topic.id, fd);
-      setTopics(topics.map((t) => (t.id === topic.id ? { ...t, ...res.data, pdfUploaded: true } : t)));
+      setTopics(
+        topics.map((t) => (t.id === topic.id ? { ...t, ...res.data, pdfUploaded: true } : t)),
+      );
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -196,7 +251,10 @@ function Step2({
   return (
     <div className="max-w-2xl">
       <h2 className="text-xl font-bold text-gray-900 mb-4">Step 2 — Topics</h2>
-      <p className="text-sm text-gray-500 mb-6">Add each topic and upload its dedicated PDF. Each topic uses only its own PDF for AI answers and quiz generation.</p>
+      <p className="text-sm text-gray-500 mb-6">
+        Add each topic and upload its dedicated PDF. Each topic uses only its own PDF for AI answers
+        and quiz generation.
+      </p>
 
       {error && <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg mb-4">{error}</p>}
 
@@ -221,21 +279,64 @@ function Step2({
       {/* Topics list */}
       <div className="space-y-3">
         {topics.length === 0 && (
-          <div className="text-center py-8 text-gray-400 text-sm">No topics yet. Add your first topic above.</div>
+          <div className="text-center py-8 text-gray-400 text-sm">
+            No topics yet. Add your first topic above.
+          </div>
         )}
         {topics.map((topic, idx) => (
-          <div key={topic.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+          <div
+            key={topic.id}
+            className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3"
+          >
             {/* Order buttons */}
             <div className="flex flex-col gap-0.5">
-              <button onClick={() => moveOrder(topic, -1)} disabled={idx === 0} className="text-gray-400 hover:text-gray-700 disabled:opacity-30 text-xs leading-none">▲</button>
-              <button onClick={() => moveOrder(topic, 1)} disabled={idx === topics.length - 1} className="text-gray-400 hover:text-gray-700 disabled:opacity-30 text-xs leading-none">▼</button>
+              <button
+                onClick={() => moveOrder(topic, -1)}
+                disabled={idx === 0}
+                className="text-gray-400 hover:text-gray-700 disabled:opacity-30 text-xs leading-none"
+              >
+                ▲
+              </button>
+              <button
+                onClick={() => moveOrder(topic, 1)}
+                disabled={idx === topics.length - 1}
+                className="text-gray-400 hover:text-gray-700 disabled:opacity-30 text-xs leading-none"
+              >
+                ▼
+              </button>
             </div>
 
             {/* Topic name */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{topic.name}</p>
+              {renamingId === topic.id ? (
+                <div className="flex gap-1">
+                  <input
+                    autoFocus
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleRename(topic);
+                      if (e.key === "Escape") setRenamingId(null);
+                    }}
+                    className="flex-1 border border-primary rounded px-2 py-0.5 text-sm focus:outline-none"
+                  />
+                  <button onClick={() => handleRename(topic)} className="text-xs text-green-700 font-medium px-1">Save</button>
+                  <button onClick={() => setRenamingId(null)} className="text-xs text-gray-400 px-1">✕</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <p className="text-sm font-medium text-gray-900 truncate">{topic.name}</p>
+                  <button
+                    onClick={() => { setRenamingId(topic.id); setRenameValue(topic.name); }}
+                    className="text-gray-400 hover:text-gray-700 text-xs ml-1"
+                    title="Rename"
+                  >✎</button>
+                </div>
+              )}
               <div className="flex gap-2 mt-1">
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${topic.pdfUploaded ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${topic.pdfUploaded ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+                >
                   {topic.pdfUploaded ? "PDF Uploaded" : "No PDF"}
                 </span>
               </div>
@@ -246,7 +347,9 @@ function Step2({
               <input
                 type="file"
                 accept=".pdf"
-                ref={(el) => { fileRefs.current[topic.id] = el; }}
+                ref={(el) => {
+                  fileRefs.current[topic.id] = el;
+                }}
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -258,7 +361,11 @@ function Step2({
                 disabled={uploadingId === topic.id}
                 className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium disabled:opacity-50"
               >
-                {uploadingId === topic.id ? "Uploading…" : topic.pdfUploaded ? "Replace PDF" : "Upload PDF"}
+                {uploadingId === topic.id
+                  ? "Uploading…"
+                  : topic.pdfUploaded
+                    ? "Replace PDF"
+                    : "Upload PDF"}
               </button>
             </div>
 
@@ -282,7 +389,9 @@ function Step2({
         >
           Continue to Mock PDFs →
         </button>
-        <p className="text-xs text-gray-400 self-center">You can upload PDFs later too. Topics without PDFs will skip question generation.</p>
+        <p className="text-xs text-gray-400 self-center">
+          You can upload PDFs later too. Topics without PDFs will skip question generation.
+        </p>
       </div>
 
       <Modal
@@ -293,7 +402,8 @@ function Step2({
         confirmLabel="Remove"
       >
         <p className="text-sm text-gray-600">
-          Remove topic <strong>{deleteTarget?.name}</strong>? This will deactivate it (questions already generated are not deleted).
+          Remove topic <strong>{deleteTarget?.name}</strong>? This will deactivate it (questions
+          already generated are not deleted).
         </p>
       </Modal>
     </div>
@@ -301,20 +411,17 @@ function Step2({
 }
 
 // ─── Step 3 ────────────────────────────────────────────────────────────────────
-function Step3({
-  subjectId,
-  onNext,
-}: {
-  subjectId: number;
-  onNext: () => void;
-}) {
+function Step3({ subjectId, onNext }: { subjectId: number; onNext: () => void }) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleUpload() {
-    if (!files.length) { onNext(); return; }
+    if (!files.length) {
+      onNext();
+      return;
+    }
     setUploading(true);
     setError(null);
     try {
@@ -323,6 +430,7 @@ function Step3({
       files.forEach((f) => fd.append("pdfFile", f));
       await api.uploadMockPDFs(subjectId, fd);
       setUploaded(true);
+      setTimeout(onNext, 800);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -334,11 +442,16 @@ function Step3({
     <div className="max-w-lg">
       <h2 className="text-xl font-bold text-gray-900 mb-2">Step 3 — Mock Test PDFs</h2>
       <p className="text-sm text-gray-500 mb-6">
-        Upload PDFs specifically for mock test questions. These are separate from topic PDFs — questions from these files will only appear in mock tests, not daily or selective quizzes.
+        Upload PDFs specifically for mock test questions. These are separate from topic PDFs —
+        questions from these files will only appear in mock tests, not daily or selective quizzes.
       </p>
 
       {error && <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg mb-4">{error}</p>}
-      {uploaded && <p className="text-green-700 text-sm bg-green-50 px-3 py-2 rounded-lg mb-4">Mock test PDFs uploaded successfully!</p>}
+      {uploaded && (
+        <p className="text-green-700 text-sm bg-green-50 px-3 py-2 rounded-lg mb-4">
+          Mock test PDFs uploaded successfully!
+        </p>
+      )}
 
       <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center mb-4">
         <input
@@ -372,7 +485,11 @@ function Step3({
           disabled={uploading}
           className="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
         >
-          {uploading ? "Uploading…" : files.length ? "Upload & Continue →" : "Skip (no mock PDFs) →"}
+          {uploading
+            ? "Uploading…"
+            : files.length
+              ? "Upload & Continue →"
+              : "Skip (no mock PDFs) →"}
         </button>
       </div>
     </div>
@@ -380,24 +497,22 @@ function Step3({
 }
 
 // ─── Step 4 ────────────────────────────────────────────────────────────────────
-function Step4({
-  subjectId,
-  initialTopics,
-}: {
-  subjectId: number;
-  initialTopics: SubjectTopic[];
-}) {
+function Step4({ subjectId, initialTopics }: { subjectId: number; initialTopics: SubjectTopic[] }) {
   const [topics, setTopics] = useState<SubjectTopic[]>(initialTopics);
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [mockLoading, setMockLoading] = useState(false);
   const [messages, setMessages] = useState<Record<string, string>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   async function refreshTopics() {
+    setRefreshing(true);
     try {
       const res = await api.getTopics(subjectId);
       setTopics(res.data);
     } catch {
       // ignore
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -408,7 +523,10 @@ function Step4({
       setMessages((p) => ({ ...p, [key]: res.message }));
       await refreshTopics();
     } catch (err: unknown) {
-      setMessages((p) => ({ ...p, [key]: `Error: ${err instanceof Error ? err.message : "Unknown"}` }));
+      setMessages((p) => ({
+        ...p,
+        [key]: `Error: ${err instanceof Error ? err.message : "Unknown"}`,
+      }));
     } finally {
       setLoadingMap((p) => ({ ...p, [key]: false }));
     }
@@ -416,9 +534,21 @@ function Step4({
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Step 4 — Generate Questions & Embeddings</h2>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-xl font-bold text-gray-900">
+          Step 4 — Generate Questions & Embeddings
+        </h2>
+        <button
+          onClick={refreshTopics}
+          disabled={refreshing}
+          className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-medium disabled:opacity-50 flex items-center gap-1"
+        >
+          {refreshing ? "Refreshing…" : "↻ Refresh Status"}
+        </button>
+      </div>
       <p className="text-sm text-gray-500 mb-6">
-        For each topic, generate questions from its PDF and create vector embeddings for AI chat. This may take a few minutes per topic.
+        For each topic, generate questions from its PDF and create vector embeddings for AI chat.
+        This may take a few minutes per topic.
       </p>
 
       <div className="space-y-3 mb-8">
@@ -427,13 +557,19 @@ function Step4({
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-gray-900">{topic.name}</p>
               <div className="flex gap-2 text-xs">
-                <span className={`px-2 py-0.5 rounded-full font-medium ${topic.pdfUploaded ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-full font-medium ${topic.pdfUploaded ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}
+                >
                   {topic.pdfUploaded ? "PDF ✓" : "No PDF"}
                 </span>
-                <span className={`px-2 py-0.5 rounded-full font-medium ${topic.questionsGenerated > 0 ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-400"}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-full font-medium ${topic.questionsGenerated > 0 ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-400"}`}
+                >
                   {topic.questionsGenerated} Qs
                 </span>
-                <span className={`px-2 py-0.5 rounded-full font-medium ${topic.embeddingsGenerated > 0 ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-400"}`}>
+                <span
+                  className={`px-2 py-0.5 rounded-full font-medium ${topic.embeddingsGenerated > 0 ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-400"}`}
+                >
                   {topic.embeddingsGenerated} Vecs
                 </span>
               </div>
@@ -444,7 +580,9 @@ function Step4({
             ) : (
               <div className="flex gap-2 flex-wrap">
                 <button
-                  onClick={() => runJob(`q-${topic.id}`, () => api.generateTopicQuestions(topic.id))}
+                  onClick={() =>
+                    runJob(`q-${topic.id}`, () => api.generateTopicQuestions(topic.id))
+                  }
                   disabled={loadingMap[`q-${topic.id}`]}
                   className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium disabled:opacity-50"
                 >
@@ -462,8 +600,12 @@ function Step4({
 
             {(messages[`q-${topic.id}`] || messages[`v-${topic.id}`]) && (
               <div className="mt-2 space-y-0.5">
-                {messages[`q-${topic.id}`] && <p className="text-xs text-gray-500">{messages[`q-${topic.id}`]}</p>}
-                {messages[`v-${topic.id}`] && <p className="text-xs text-gray-500">{messages[`v-${topic.id}`]}</p>}
+                {messages[`q-${topic.id}`] && (
+                  <p className="text-xs text-gray-500">{messages[`q-${topic.id}`]}</p>
+                )}
+                {messages[`v-${topic.id}`] && (
+                  <p className="text-xs text-gray-500">{messages[`v-${topic.id}`]}</p>
+                )}
               </div>
             )}
           </div>
@@ -475,7 +617,9 @@ function Step4({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-gray-900">Mock Test Questions</p>
-            <p className="text-xs text-gray-500 mt-0.5">Generate questions from mock test PDFs (uploaded in Step 3)</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Generate questions from mock test PDFs (uploaded in Step 3)
+            </p>
           </div>
           <button
             onClick={async () => {
@@ -484,7 +628,10 @@ function Step4({
                 const res = await api.generateMockQuestions(subjectId);
                 setMessages((p) => ({ ...p, mock: res.message }));
               } catch (err: unknown) {
-                setMessages((p) => ({ ...p, mock: `Error: ${err instanceof Error ? err.message : "Unknown"}` }));
+                setMessages((p) => ({
+                  ...p,
+                  mock: `Error: ${err instanceof Error ? err.message : "Unknown"}`,
+                }));
               } finally {
                 setMockLoading(false);
               }
@@ -501,7 +648,8 @@ function Step4({
       <div className="mt-8 p-4 bg-green-50 rounded-xl">
         <p className="text-sm font-semibold text-green-800">Module setup complete!</p>
         <p className="text-xs text-green-700 mt-1">
-          Students can now access topic-aware AI chat, practice quizzes, and mock tests. Topics and questions are visible in the app immediately.
+          Students can now access topic-aware AI chat, practice quizzes, and mock tests. Topics and
+          questions are visible in the app immediately.
         </p>
       </div>
     </div>
@@ -513,10 +661,30 @@ export default function MasterModulePage() {
   const [step, setStep] = useState<Step>(1);
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [topics, setTopics] = useState<SubjectTopic[]>([]);
+  const [editId, setEditId] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
 
   function handleModuleCreated(id: number) {
     setSubjectId(id);
     setStep(2);
+  }
+
+  async function handleContinueEditing() {
+    const id = parseInt(editId);
+    if (!id) return setEditError("Enter a valid subject ID");
+    setEditLoading(true);
+    setEditError(null);
+    try {
+      const res = await api.getTopics(id);
+      setSubjectId(id);
+      setTopics(res.data);
+      setStep(2);
+    } catch {
+      setEditError("Module not found or failed to load topics");
+    } finally {
+      setEditLoading(false);
+    }
   }
 
   return (
@@ -524,9 +692,34 @@ export default function MasterModulePage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Create v2 Module</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Build a structured module with fixed topics, per-topic PDFs, and separate mock test content.
+          Build a structured module with fixed topics, per-topic PDFs, and separate mock test
+          content.
         </p>
       </div>
+
+      {/* Continue editing existing module */}
+      {step === 1 && (
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
+          <p className="text-sm font-medium text-gray-700 mb-2">Continue editing an existing module</p>
+          <div className="flex gap-2 items-start">
+            <input
+              type="number"
+              placeholder="Subject ID (e.g. 21)"
+              value={editId}
+              onChange={(e) => setEditId(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-48"
+            />
+            <button
+              onClick={handleContinueEditing}
+              disabled={editLoading}
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+            >
+              {editLoading ? "Loading…" : "Continue Editing →"}
+            </button>
+          </div>
+          {editError && <p className="text-red-600 text-xs mt-2">{editError}</p>}
+        </div>
+      )}
 
       <StepIndicator current={step} />
 
@@ -545,9 +738,7 @@ export default function MasterModulePage() {
         <Step3 subjectId={subjectId} onNext={() => setStep(4)} />
       )}
 
-      {step === 4 && subjectId !== null && (
-        <Step4 subjectId={subjectId} initialTopics={topics} />
-      )}
+      {step === 4 && subjectId !== null && <Step4 subjectId={subjectId} initialTopics={topics} />}
     </div>
   );
 }
