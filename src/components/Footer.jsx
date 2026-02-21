@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
 import { NavLinks } from '@/components/NavLinks'
+import { APK_DOWNLOAD_URL, PLAY_STORE_URL } from '@/lib/constants'
 
 export function Footer() {
   return (
@@ -19,13 +20,21 @@ export function Footer() {
             </nav>
           </div>
 
-          <div>
+          <div className="flex flex-wrap gap-3">
             <a
-              href="#"
+              href={PLAY_STORE_URL}
               className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
             >
-              App herunterladen
+              Google Play
             </a>
+            {APK_DOWNLOAD_URL !== '#' && (
+              <a
+                href={APK_DOWNLOAD_URL}
+                className="inline-flex items-center justify-center rounded-lg border-2 border-gray-900 px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100"
+              >
+                APK herunterladen
+              </a>
+            )}
           </div>
         </div>
 

@@ -13,6 +13,7 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
 import { NavLinks } from '@/components/NavLinks'
+import { APK_DOWNLOAD_URL, PLAY_STORE_URL } from '@/lib/constants'
 
 function MenuIcon(props) {
   return (
@@ -119,7 +120,10 @@ export function Header() {
                             {/*<Button href="/login" variant="outline">*/}
                             {/*  Log in*/}
                             {/*</Button>*/}
-                            <Button href="#">App herunterladen</Button>
+                            <Button href={PLAY_STORE_URL}>Google Play</Button>
+                            {APK_DOWNLOAD_URL !== '#' && (
+                              <Button href={APK_DOWNLOAD_URL} variant="outline">APK</Button>
+                            )}
                           </div>
                         </PopoverPanel>
                       </>
@@ -132,7 +136,10 @@ export function Header() {
               {/*<Button href="/login" variant="outline">*/}
               {/*  Log in*/}
               {/*</Button>*/}
-              <Button href="#">App herunterladen</Button>
+              <Button href={PLAY_STORE_URL}>Google Play</Button>
+              {APK_DOWNLOAD_URL !== '#' && (
+                <Button href={APK_DOWNLOAD_URL} variant="outline">APK</Button>
+              )}
             </div>
           </div>
         </Container>
