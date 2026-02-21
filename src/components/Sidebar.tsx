@@ -10,7 +10,6 @@ const navItems = [
   { label: "Payments", href: "/admin/payments", icon: "💳" },
   { label: "Announcements", href: "/admin/announcements", icon: "📢" },
   { label: "Modules", href: "/admin/modules", icon: "📚" },
-  { label: "Create v2 Module", href: "/admin/master-module", icon: "🗂" },
   { label: "Tickets", href: "/admin/tickets", icon: "🎫" },
   { label: "Settings", href: "/admin/settings", icon: "⚙️" },
 ];
