@@ -11,6 +11,7 @@ import type {
   SubjectTopic,
   CreateTopicRequest,
   GenerateJobResponse,
+  DashboardStats,
 } from "./types";
 
 const API_BASE = "https://api.psygenius.mentoragenius.de";
@@ -76,6 +77,9 @@ export const api = {
         deviceInfo: { deviceId: "web-dashboard", deviceName: "Browser" },
       }),
     }),
+
+  getStats: () =>
+    fetchApi<{ success: boolean; data: DashboardStats }>("/admin/v1/stats"),
 
   getStudents: () =>
     fetchApi<{ success: boolean; students: Student[] }>("/admin/v1/students"),

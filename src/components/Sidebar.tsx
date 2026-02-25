@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAuth } from "./AuthProvider";
 
 const navItems = [
+  { label: "Dashboard", href: "/admin/dashboard", icon: "📊" },
   { label: "Users", href: "/admin/users", icon: "👤" },
   { label: "Payments", href: "/admin/payments", icon: "💳" },
   { label: "Announcements", href: "/admin/announcements", icon: "📢" },

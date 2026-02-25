@@ -182,6 +182,24 @@ export interface V2SubjectCreateRequest {
   currency?: string;
 }
 
+// Dashboard stats
+export interface DashboardStats {
+  totalUsers: number;
+  newUsersToday: number;
+  newUsersThisMonth: number;
+  activeUsersToday: number;
+  activeUsersThisMonth: number;
+  submissionsToday: number;
+  submissionsThisMonth: number;
+  paymentsToday: number;
+  paymentsThisMonth: number;
+  totalPayments: number;
+  revenueToday: number;
+  revenueThisMonth: number;
+  totalRevenue: number;
+  openTickets: number;
+}
+
 // Announcements
 export interface AnnouncementRequest {
   title: string;
