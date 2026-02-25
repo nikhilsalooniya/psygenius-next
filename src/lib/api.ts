@@ -182,4 +182,10 @@ export const api = {
 
   generateTopicVectors: (topicId: number) =>
     fetchApi<GenerateJobResponse>(`/admin/v2/vector/topic/${topicId}`, { method: "POST" }),
+
+  grantFreeModule: (userId: string, subjectIds: number[]) =>
+    fetchApi<{ success: boolean; message: string }>(`/admin/v1/student/${userId}`, {
+      method: "POST",
+      body: JSON.stringify({ books: subjectIds.map((sid) => ({ SubjectId: sid })) }),
+    }),
 };

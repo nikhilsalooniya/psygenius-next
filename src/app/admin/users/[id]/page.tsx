@@ -11,14 +11,36 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
   const [data, setData] = useState<StudentDetailResponse | null>(null);
   const [userPayments, setUserPayments] = useState<Payment[]>([]);
   const [subjectMap, setSubjectMap] = useState<Record<number, string>>({});
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showGrantModal, setShowGrantModal] = useState(false);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | "">("");
+  const [granting, setGranting] = useState(false);
+  const [grantError, setGrantError] = useState<string | null>(null);
 
   const copyId = () => {
     navigator.clipboard.writeText(id);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleGrant = async () => {
+    if (!selectedSubjectId) return;
+    setGranting(true);
+    setGrantError(null);
+    try {
+      await api.grantFreeModule(id, [selectedSubjectId as number]);
+      setShowGrantModal(false);
+      setSelectedSubjectId("");
+      const updated = await api.getStudent(id);
+      setData(updated);
+    } catch (err: unknown) {
+      setGrantError(err instanceof Error ? err.message : "Failed to grant access");
+    } finally {
+      setGranting(false);
+    }
   };
 
   useEffect(() => {
@@ -37,6 +59,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
           map[s.id] = s.subjectName;
         });
         setSubjectMap(map);
+        setAllSubjects(subjectsRes.data);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -47,6 +70,8 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
   if (!data) return <div className="text-gray-500 text-sm">Student not found</div>;
 
   const { student, scoreDetails, books, totalBooks, leaderboard, weakTopics } = data.data;
+  const purchasedIds = new Set(books.map((b) => b.id));
+  const availableSubjects = allSubjects.filter((s) => !purchasedIds.has(s.id));
 
   return (
     <div>
@@ -183,9 +208,17 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
 
       {/* Purchased Books */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">
-          Purchased Books ({totalBooks})
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-700">
+            Purchased Books ({totalBooks})
+          </h2>
+          <button
+            onClick={() => { setSelectedSubjectId(""); setGrantError(null); setShowGrantModal(true); }}
+            className="text-xs px-3 py-1.5 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity"
+          >
+            + Grant Free Module
+          </button>
+        </div>
         {books && books.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {books.map((book) => (
@@ -293,6 +326,53 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                 <p className="text-gray-700 mt-1">{ticket.message}</p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Grant Free Module Modal */}
+      {showGrantModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-xl">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">Grant Free Module</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Select a module to grant free access to{" "}
+              <span className="font-medium text-gray-900">{student.fullName}</span>.
+            </p>
+            {availableSubjects.length === 0 ? (
+              <p className="text-sm text-gray-400 mb-4">
+                This user already has access to all modules.
+              </p>
+            ) : (
+              <select
+                value={selectedSubjectId}
+                onChange={(e) => setSelectedSubjectId(e.target.value ? Number(e.target.value) : "")}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">— Select a module —</option>
+                {availableSubjects.map((s) => (
+                  <option key={s.id} value={s.id}>{s.subjectName}</option>
+                ))}
+              </select>
+            )}
+            {grantError && (
+              <p className="text-xs text-red-600 mb-3">{grantError}</p>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowGrantModal(false)}
+                className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGrant}
+                disabled={!selectedSubjectId || granting || availableSubjects.length === 0}
+                className="px-4 py-2 text-sm rounded-lg bg-primary text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {granting ? "Granting..." : "Grant Access"}
+              </button>
+            </div>
           </div>
         </div>
       )}
