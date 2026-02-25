@@ -152,6 +152,28 @@ export default function DashboardPage() {
             <SingleStatCard title="Offene Tickets" value={stats.openTickets} color={stats.openTickets > 0 ? "text-amber-600" : "text-gray-500"} icon="🎫" subtitle="Support-Anfragen" />
           </div>
 
+          {/* Analytics — webpage visits + app signups */}
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Analytics</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <StatCard
+                title="Webseitenbesuche"
+                today={stats.pageViewsToday ?? 0}
+                monthly={stats.pageViewsThisMonth ?? 0}
+                color="text-indigo-600"
+                icon="🌐"
+              />
+              <StatCard
+                title="App-Anmeldungen"
+                today={stats.newUsersToday}
+                monthly={stats.newUsersThisMonth}
+                total={`${stats.totalUsers} gesamt`}
+                color="text-primary"
+                icon="📲"
+              />
+            </div>
+          </div>
+
           {/* Daily / Monthly cards */}
           <div>
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">

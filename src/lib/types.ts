@@ -198,6 +198,8 @@ export interface DashboardStats {
   revenueThisMonth: number;
   totalRevenue: number;
   openTickets: number;
+  pageViewsToday: number;
+  pageViewsThisMonth: number;
 }
 
 // Announcements
