@@ -9,12 +9,30 @@ import type { Subject } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.psygenius.mentoragenius.de";
 
+const DEFAULT_POINTS_PLACEHOLDER = [
+  "Einmal kaufen, dauerhaft nutzen",
+  "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
+  "Tageschallenge mit 10 adaptiven Fragen",
+  "Quizmodus, Tageschallenge & Probeklausuren",
+  "KI erkennt deine Lernlücken",
+  "Prüfungsnahe Fragen & realistisches Zeitlimit",
+  "KI-Erklärungen zu allen Fragen & Begriffen",
+].join("\n");
+
 export default function ModulesPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [toggleTarget, setToggleTarget] = useState<Subject | null>(null);
   const [toggling, setToggling] = useState(false);
+
+  // Display settings modal state
+  const [displayTarget, setDisplayTarget] = useState<Subject | null>(null);
+  const [displayPrice, setDisplayPrice] = useState("");
+  const [displayOriginalPrice, setDisplayOriginalPrice] = useState("");
+  const [displayPoints, setDisplayPoints] = useState("");
+  const [savingDisplay, setSavingDisplay] = useState(false);
+  const [displayError, setDisplayError] = useState("");
 
   function fetchSubjects() {
     setLoading(true);
@@ -40,6 +58,40 @@ export default function ModulesPage() {
       setError(err instanceof Error ? err.message : "Failed to toggle");
     } finally {
       setToggling(false);
+    }
+  }
+
+  function openDisplayModal(subject: Subject) {
+    setDisplayTarget(subject);
+    setDisplayPrice(subject.displayPrice || "");
+    setDisplayOriginalPrice(subject.displayOriginalPrice || "");
+    setDisplayPoints(
+      subject.displayPoints
+        ? (() => { try { return JSON.parse(subject.displayPoints).join("\n"); } catch { return subject.displayPoints ?? ""; } })()
+        : ""
+    );
+    setDisplayError("");
+  }
+
+  async function handleSaveDisplay() {
+    if (!displayTarget) return;
+    setSavingDisplay(true);
+    setDisplayError("");
+    try {
+      const points = displayPoints.trim()
+        ? displayPoints.split("\n").map((l) => l.trim()).filter(Boolean)
+        : [];
+      await api.updateSubjectDisplay(displayTarget.id, {
+        displayPrice: displayPrice.trim() || null,
+        displayOriginalPrice: displayOriginalPrice.trim() || null,
+        displayPoints: points.length ? points : null,
+      });
+      setDisplayTarget(null);
+      fetchSubjects();
+    } catch (err) {
+      setDisplayError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSavingDisplay(false);
     }
   }
 
@@ -84,7 +136,7 @@ export default function ModulesPage() {
               </div>
               <p className="text-xs text-gray-500 line-clamp-2 mb-3">{subject.description}</p>
 
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
                 <span>
                   {subject.currency}{" "}
                   {subject.price != null ? subject.price : "Free"}
@@ -94,6 +146,17 @@ export default function ModulesPage() {
                 </span>
                 <span>{subject.purchaseCount} purchases</span>
               </div>
+
+              {/* Display pricing preview */}
+              {(subject.displayPrice || subject.displayOriginalPrice) && (
+                <p className="text-xs text-purple-600 mb-2">
+                  Landing page:{" "}
+                  {subject.displayOriginalPrice && (
+                    <span className="line-through text-gray-400 mr-1">{subject.displayOriginalPrice}</span>
+                  )}
+                  <span className="font-medium">{subject.displayPrice}</span>
+                </p>
+              )}
 
               {subject.author && (
                 <p className="text-xs text-gray-400 mb-3">By {subject.author}</p>
@@ -106,6 +169,12 @@ export default function ModulesPage() {
                 >
                   Edit
                 </Link>
+                <button
+                  onClick={() => openDisplayModal(subject)}
+                  className="flex-1 px-3 py-1.5 border border-purple-200 text-purple-600 rounded-lg text-xs font-medium hover:bg-purple-50 transition-colors"
+                >
+                  Display
+                </button>
                 <button
                   onClick={() => setToggleTarget(subject)}
                   className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -122,6 +191,7 @@ export default function ModulesPage() {
         ))}
       </div>
 
+      {/* Toggle active modal */}
       <Modal
         open={!!toggleTarget}
         onClose={() => setToggleTarget(null)}
@@ -133,6 +203,80 @@ export default function ModulesPage() {
         Are you sure you want to {toggleTarget?.active ? "deactivate" : "activate"}{" "}
         <strong>{toggleTarget?.subjectName}</strong>?
       </Modal>
+
+      {/* Display settings modal */}
+      {displayTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h2 className="text-base font-bold text-gray-900 mb-1">Landing Page Display</h2>
+            <p className="text-xs text-gray-500 mb-5">
+              {displayTarget.subjectName} — controls how this module appears in the pricing section.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Display Price <span className="text-gray-400">(e.g. €9.99)</span>
+                </label>
+                <input
+                  type="text"
+                  value={displayPrice}
+                  onChange={(e) => setDisplayPrice(e.target.value)}
+                  placeholder="€9.99"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Original Price (crossed out) <span className="text-gray-400">(e.g. €14.99)</span>
+                </label>
+                <input
+                  type="text"
+                  value={displayOriginalPrice}
+                  onChange={(e) => setDisplayOriginalPrice(e.target.value)}
+                  placeholder="€14.99"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Feature Bullet Points{" "}
+                  <span className="text-gray-400">(one per line — leave empty to use defaults)</span>
+                </label>
+                <textarea
+                  value={displayPoints}
+                  onChange={(e) => setDisplayPoints(e.target.value)}
+                  placeholder={DEFAULT_POINTS_PLACEHOLDER}
+                  rows={7}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none font-mono"
+                />
+              </div>
+            </div>
+
+            {displayError && (
+              <p className="mt-3 text-xs text-red-600">{displayError}</p>
+            )}
+
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => setDisplayTarget(null)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveDisplay}
+                disabled={savingDisplay}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50"
+              >
+                {savingDisplay ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -143,6 +143,9 @@ export interface Subject {
   createdAt: string;
   purchaseCount: number;
   purchasedUsers: PurchasedUser[];
+  displayPrice: string | null;
+  displayOriginalPrice: string | null;
+  displayPoints: string | null; // JSON stringified string[]
 }
 
 // V2 Module / Topic types

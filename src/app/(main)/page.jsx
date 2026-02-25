@@ -8,7 +8,24 @@ import { SecondaryFeatures } from "@/components/SecondaryFeatures";
 import Contact from "@/components/Contact";
 import { VideoSection } from "@/components/VideoSection";
 
-export default function Home() {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.psygenius.mentoragenius.de";
+
+async function getActiveSubjects() {
+  try {
+    const res = await fetch(`${API_BASE}/api/public/subjects`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const subjects = await getActiveSubjects();
+
   return (
     <>
       <Hero />
@@ -18,7 +35,7 @@ export default function Home() {
       <div className="bg-[url('/Mentora-Graffiti.png')] bg-center bg-cover bg-no-repeat h-[35vh] sm:h-[45vh] lg:h-[60vh] w-full"></div>
       <Reviews />
       <CallToAction />
-      <Pricing />
+      <Pricing subjects={subjects} />
       <Contact />
       <Faqs />
     </>

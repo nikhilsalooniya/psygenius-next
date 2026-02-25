@@ -1,78 +1,27 @@
 import { CheckIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 
-const tiers = [
-  {
-    name: "Einführung in die Psychologie",
-    id: "p1",
-    href: "#",
-    price: "€9.99",
-    originalPrice: "€14.99",
-    features: [
-      "Einmal kaufen, dauerhaft nutzen",
-      "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
-      "Tageschallenge mit 10 adaptiven Fragen",
-      "Quizmodus, Tageschallenge & Probeklausuren",
-      "KI erkennt deine Lernlücken",
-      "Prüfungsnahe Fragen & realistisches Zeitlimit",
-      "KI-Erklärungen zu allen Fragen & Begriffen",
-    ],
-    cta: "Modul kaufen",
-  },
-  {
-    name: "Statistik",
-    id: "p2",
-    href: "#",
-    price: "€9.99",
-    originalPrice: "€14.99",
-    features: [
-      "Einmal kaufen, dauerhaft nutzen",
-      "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
-      "Tageschallenge mit 10 adaptiven Fragen",
-      "Quizmodus, Tageschallenge & Probeklausuren",
-      "KI erkennt deine Lernlücken",
-      "Prüfungsnahe Fragen & realistisches Zeitlimit",
-      "KI-Erklärungen zu allen Fragen & Begriffen",
-    ],
-    cta: "Modul kaufen",
-  },
-  {
-    name: "Entwicklungspsychologie",
-    id: "p3",
-    href: "#",
-    price: "€9.99",
-    originalPrice: "€14.99",
-    features: [
-      "Einmal kaufen, dauerhaft nutzen",
-      "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
-      "Tageschallenge mit 10 adaptiven Fragen",
-      "Quizmodus, Tageschallenge & Probeklausuren",
-      "KI erkennt deine Lernlücken",
-      "Prüfungsnahe Fragen & realistisches Zeitlimit",
-      "KI-Erklärungen zu allen Fragen & Begriffen",
-    ],
-    cta: "Modul kaufen",
-  },
-  {
-    name: "Sozialpsychologie",
-    id: "p4",
-    href: "#",
-    price: "€9.99",
-    originalPrice: "€14.99",
-    features: [
-      "Einmal kaufen, dauerhaft nutzen",
-      "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
-      "Tageschallenge mit 10 adaptiven Fragen",
-      "Quizmodus, Tageschallenge & Probeklausuren",
-      "KI erkennt deine Lernlücken",
-      "Prüfungsnahe Fragen & realistisches Zeitlimit",
-      "KI-Erklärungen zu allen Fragen & Begriffen",
-    ],
-    cta: "Modul kaufen",
-  },
+const DEFAULT_POINTS = [
+  "Einmal kaufen, dauerhaft nutzen",
+  "Prüfungsnahe Multiple-Choice-Fragen (5 Antwortmöglichkeiten)",
+  "Tageschallenge mit 10 adaptiven Fragen",
+  "Quizmodus, Tageschallenge & Probeklausuren",
+  "KI erkennt deine Lernlücken",
+  "Prüfungsnahe Fragen & realistisches Zeitlimit",
+  "KI-Erklärungen zu allen Fragen & Begriffen",
 ];
 
-export function Pricing() {
+const GRID_COLS = {
+  1: "grid-cols-1",
+  2: "grid-cols-1 sm:grid-cols-2",
+  3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+  4: "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4",
+};
+
+export function Pricing({ subjects = [] }) {
+  const displaySubjects = subjects.slice(0, 8);
+  const colClass = GRID_COLS[Math.min(displaySubjects.length, 4)] ?? GRID_COLS[4];
+
   return (
     <section
       id="pricing-section"
@@ -120,61 +69,67 @@ export function Pricing() {
           </p>
         </div>
 
-        {/* Cards grid */}
-        <div className="mx-auto mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className="relative flex flex-col rounded-2xl border border-white/70 bg-white/50 backdrop-blur-xl shadow-xl shadow-purple-100/60 p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-200/60"
-            >
-              {/* Discount badge */}
-              <span className="self-start mb-4 rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
-                33% RABATT
-              </span>
+        {/* Cards grid — columns = card count, max 4 */}
+        <div className={`mx-auto mt-16 grid gap-6 ${colClass}`}>
+          {displaySubjects.map((subject) => {
+            const points = subject.displayPoints
+              ? (() => { try { return JSON.parse(subject.displayPoints); } catch { return DEFAULT_POINTS; } })()
+              : DEFAULT_POINTS;
 
-              {/* Module name */}
-              <h3 className="text-sm font-semibold text-gray-900 leading-snug min-h-10">
-                {tier.name}
-              </h3>
+            const hasDiscount = subject.displayPrice && subject.displayOriginalPrice;
 
-              {/* Price block */}
-              <div className="mt-5 flex items-baseline gap-x-2">
-                <span className="text-sm font-medium line-through text-gray-400">
-                  {tier.originalPrice}
-                </span>
-                <span className="text-4xl font-bold tracking-tight text-gray-900">
-                  {tier.price}
-                </span>
-              </div>
-
-              {/* Divider */}
-              <div className="mt-5 h-px bg-linear-to-r from-transparent via-purple-200 to-transparent" />
-
-              {/* Features */}
-              <ul role="list" className="mt-5 flex-1 space-y-2.5">
-                {tier.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-start gap-x-2.5 text-xs text-gray-600 leading-relaxed"
-                  >
-                    <CheckIcon
-                      className="mt-0.5 h-4 w-4 flex-none text-purple-500"
-                      aria-hidden="true"
-                    />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              <a
-                href={tier.href}
-                className="mt-7 block w-full rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-md shadow-purple-300/40 transition-all duration-200 hover:from-purple-500 hover:to-indigo-500 hover:shadow-purple-400/50"
+            return (
+              <div
+                key={subject.id}
+                className="relative flex flex-col rounded-2xl border border-white/70 bg-white/50 backdrop-blur-xl shadow-xl shadow-purple-100/60 p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-200/60"
               >
-                {tier.cta}
-              </a>
-            </div>
-          ))}
+                {hasDiscount && (
+                  <span className="self-start mb-4 rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
+                    SONDERANGEBOT
+                  </span>
+                )}
+
+                <h3 className="text-sm font-semibold text-gray-900 leading-snug min-h-10">
+                  {subject.subjectName}
+                </h3>
+
+                <div className="mt-5 flex items-baseline gap-x-2">
+                  {subject.displayOriginalPrice && (
+                    <span className="text-sm font-medium line-through text-gray-400">
+                      €{subject.displayOriginalPrice}
+                    </span>
+                  )}
+                  <span className="text-4xl font-bold tracking-tight text-gray-900">
+                    {subject.displayPrice ? `€${subject.displayPrice}` : `€${subject.price ?? "—"}`}
+                  </span>
+                </div>
+
+                <div className="mt-5 h-px bg-linear-to-r from-transparent via-purple-200 to-transparent" />
+
+                <ul role="list" className="mt-5 flex-1 space-y-2.5">
+                  {points.map((point, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-x-2.5 text-xs text-gray-600 leading-relaxed"
+                    >
+                      <CheckIcon
+                        className="mt-0.5 h-4 w-4 flex-none text-purple-500"
+                        aria-hidden="true"
+                      />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="#"
+                  className="mt-7 block w-full rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-md shadow-purple-300/40 transition-all duration-200 hover:from-purple-500 hover:to-indigo-500 hover:shadow-purple-400/50"
+                >
+                  Modul kaufen
+                </a>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

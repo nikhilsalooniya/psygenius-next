@@ -105,6 +105,12 @@ export const api = {
       { method: "DELETE" }
     ),
 
+  updateSubjectDisplay: (id: number, data: { displayPrice?: string | null; displayOriginalPrice?: string | null; displayPoints?: string[] | null }) =>
+    fetchApi<{ success: boolean; message: string; data: Subject }>(
+      `/admin/v1/subject/${id}/display`,
+      { method: "PATCH", body: JSON.stringify(data) }
+    ),
+
   sendAnnouncement: (data: AnnouncementRequest) =>
     fetchApi<AnnouncementResponse>("/admin/announcements/send", {
       method: "POST",
