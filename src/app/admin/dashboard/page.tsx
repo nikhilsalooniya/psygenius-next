@@ -23,18 +23,18 @@ function StatCard({ title, today, monthly, total, color, icon }: StatCardProps) 
 
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-xs text-gray-400 mb-1">Heute</p>
+          <p className="text-xs text-gray-400 mb-1">Today</p>
           <p className={`text-xl font-bold ${color}`}>{today}</p>
         </div>
         <div className="bg-gray-50 rounded-lg p-3">
-          <p className="text-xs text-gray-400 mb-1">Diesen Monat</p>
+          <p className="text-xs text-gray-400 mb-1">This Month</p>
           <p className={`text-xl font-bold ${color}`}>{monthly}</p>
         </div>
       </div>
 
       {total !== undefined && (
         <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-          <span className="text-xs text-gray-400">Gesamt</span>
+          <span className="text-xs text-gray-400">Total</span>
           <span className={`text-sm font-semibold ${color}`}>{total}</span>
         </div>
       )}
@@ -67,9 +67,10 @@ function SingleStatCard({
   );
 }
 
-function formatRevenue(amount: number): string {
-  if (amount >= 1000) return `€${(amount / 1000).toFixed(1)}k`;
-  return `€${amount.toFixed(2)}`;
+function formatRevenue(amount: number | undefined | null): string {
+  const n = Number(amount) || 0;
+  if (n >= 1000) return `€${(n / 1000).toFixed(1)}k`;
+  return `€${n.toFixed(2)}`;
 }
 
 export default function DashboardPage() {
@@ -95,8 +96,8 @@ export default function DashboardPage() {
   }, []);
 
   const now = new Date();
-  const monthName = now.toLocaleString("de-DE", { month: "long" });
-  const today = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const monthName = now.toLocaleString("en-US", { month: "long" });
+  const today = now.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -120,7 +121,7 @@ export default function DashboardPage() {
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          {loading ? "Laden..." : "Aktualisieren"}
+          {loading ? "Loading..." : "Refresh"}
         </button>
       </div>
 
@@ -146,10 +147,10 @@ export default function DashboardPage() {
         <div className="space-y-6">
           {/* Top row — totals */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <SingleStatCard title="Nutzer gesamt" value={stats.totalUsers} color="text-primary" icon="👥" />
-            <SingleStatCard title="Zahlungen gesamt" value={stats.totalPayments} color="text-green-600" icon="💳" />
-            <SingleStatCard title="Gesamtumsatz" value={formatRevenue(stats.totalRevenue)} color="text-emerald-600" icon="💰" />
-            <SingleStatCard title="Offene Tickets" value={stats.openTickets} color={stats.openTickets > 0 ? "text-amber-600" : "text-gray-500"} icon="🎫" subtitle="Support-Anfragen" />
+            <SingleStatCard title="Total Users" value={stats.totalUsers} color="text-primary" icon="👥" />
+            <SingleStatCard title="Total Payments" value={stats.totalPayments} color="text-green-600" icon="💳" />
+            <SingleStatCard title="Total Revenue" value={formatRevenue(stats.totalRevenue)} color="text-emerald-600" icon="💰" />
+            <SingleStatCard title="Open Tickets" value={stats.openTickets} color={stats.openTickets > 0 ? "text-amber-600" : "text-gray-500"} icon="🎫" subtitle="Support Requests" />
           </div>
 
           {/* Analytics — webpage visits + app signups */}
@@ -157,17 +158,17 @@ export default function DashboardPage() {
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Analytics</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <StatCard
-                title="Webseitenbesuche"
+                title="Website Visits"
                 today={stats.pageViewsToday ?? 0}
                 monthly={stats.pageViewsThisMonth ?? 0}
                 color="text-indigo-600"
                 icon="🌐"
               />
               <StatCard
-                title="App-Anmeldungen"
+                title="App Signups"
                 today={stats.newUsersToday}
                 monthly={stats.newUsersThisMonth}
-                total={`${stats.totalUsers} gesamt`}
+                total={`${stats.totalUsers} total`}
                 color="text-primary"
                 icon="📲"
               />
@@ -177,35 +178,35 @@ export default function DashboardPage() {
           {/* Daily / Monthly cards */}
           <div>
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              Heute vs. {monthName}
+              Today vs. {monthName}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
-                title="Neue Nutzer"
+                title="New Users"
                 today={stats.newUsersToday}
                 monthly={stats.newUsersThisMonth}
                 color="text-primary"
                 icon="🆕"
               />
               <StatCard
-                title="Aktive Nutzer"
+                title="Active Users"
                 today={stats.activeUsersToday}
                 monthly={stats.activeUsersThisMonth}
                 color="text-blue-600"
                 icon="📱"
               />
               <StatCard
-                title="Quiz-Versuche"
+                title="Quiz Attempts"
                 today={stats.submissionsToday}
                 monthly={stats.submissionsThisMonth}
                 color="text-violet-600"
                 icon="📝"
               />
               <StatCard
-                title="Zahlungen"
+                title="Payments"
                 today={stats.paymentsToday}
                 monthly={stats.paymentsThisMonth}
-                total={formatRevenue(stats.revenueThisMonth) + " diesen Monat"}
+                total={formatRevenue(stats.revenueThisMonth) + " this month"}
                 color="text-green-600"
                 icon="💳"
               />
@@ -214,11 +215,11 @@ export default function DashboardPage() {
 
           {/* Revenue breakdown */}
           <div>
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Umsatz</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Revenue</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <SingleStatCard title="Heute" value={formatRevenue(stats.revenueToday)} color="text-emerald-600" icon="📈" />
+              <SingleStatCard title="Today" value={formatRevenue(stats.revenueToday)} color="text-emerald-600" icon="📈" />
               <SingleStatCard title={monthName} value={formatRevenue(stats.revenueThisMonth)} color="text-emerald-600" icon="📅" />
-              <SingleStatCard title="Gesamt" value={formatRevenue(stats.totalRevenue)} color="text-emerald-700" icon="💰" />
+              <SingleStatCard title="All Time" value={formatRevenue(stats.totalRevenue)} color="text-emerald-700" icon="💰" />
             </div>
           </div>
         </div>
