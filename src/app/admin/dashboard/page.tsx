@@ -146,9 +146,8 @@ export default function DashboardPage() {
       ) : stats ? (
         <div className="space-y-6">
           {/* Top row — totals */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <SingleStatCard title="Total Users" value={stats.totalUsers} color="text-primary" icon="👥" />
-            <SingleStatCard title="Total Payments" value={stats.totalPayments} color="text-green-600" icon="💳" />
             <SingleStatCard title="Total Revenue" value={formatRevenue(stats.totalRevenue)} color="text-emerald-600" icon="💰" />
             <SingleStatCard title="Open Tickets" value={stats.openTickets} color={stats.openTickets > 0 ? "text-amber-600" : "text-gray-500"} icon="🎫" subtitle="Support Requests" />
           </div>
@@ -175,51 +174,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Daily / Monthly cards */}
+          {/* Payments */}
           <div>
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
               Today vs. {monthName}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard
-                title="New Users"
-                today={stats.newUsersToday}
-                monthly={stats.newUsersThisMonth}
-                color="text-primary"
-                icon="🆕"
-              />
-              <StatCard
-                title="Active Users"
-                today={stats.activeUsersToday}
-                monthly={stats.activeUsersThisMonth}
-                color="text-blue-600"
-                icon="📱"
-              />
-              <StatCard
-                title="Quiz Attempts"
-                today={stats.submissionsToday}
-                monthly={stats.submissionsThisMonth}
-                color="text-violet-600"
-                icon="📝"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <StatCard
                 title="Payments"
                 today={stats.paymentsToday}
                 monthly={stats.paymentsThisMonth}
-                total={formatRevenue(stats.revenueThisMonth) + " this month"}
                 color="text-green-600"
                 icon="💳"
               />
-            </div>
-          </div>
-
-          {/* Revenue breakdown */}
-          <div>
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Revenue</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <SingleStatCard title="Today" value={formatRevenue(stats.revenueToday)} color="text-emerald-600" icon="📈" />
-              <SingleStatCard title={monthName} value={formatRevenue(stats.revenueThisMonth)} color="text-emerald-600" icon="📅" />
-              <SingleStatCard title="All Time" value={formatRevenue(stats.totalRevenue)} color="text-emerald-700" icon="💰" />
+              <StatCard
+                title="Revenue"
+                today={formatRevenue(stats.revenueToday)}
+                monthly={formatRevenue(stats.revenueThisMonth)}
+                color="text-emerald-600"
+                icon="📈"
+              />
             </div>
           </div>
         </div>
