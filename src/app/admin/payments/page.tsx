@@ -15,6 +15,8 @@ export default function PaymentsPage() {
   const [subjectMap, setSubjectMap] = useState<Record<number, string>>({});
   const [filter, setFilter] = useState<string>("All");
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -78,7 +80,7 @@ export default function PaymentsPage() {
       key: "amount",
       label: "Amount",
       render: (p) => {
-        const amt = p.currency === "INR" ? p.amount / 100 : p.amount;
+        const amt = p.currency === "INR" ? Number(p.amount) / 100 : Number(p.amount);
         const symbol = p.currency === "INR" ? "\u20B9" : p.currency === "EUR" ? "\u20AC" : "$";
         return `${symbol}${amt.toFixed(2)}`;
       },
@@ -114,52 +116,98 @@ export default function PaymentsPage() {
     },
   ];
 
-  const filtered = payments.filter((p) => {
-    if (filter !== "All" && p.paymentstatus !== filter) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      const userName = (userMap[p.userId] || "").toLowerCase();
-      const moduleName = (subjectMap[p.SubjectId] || "").toLowerCase();
-      return (
-        userName.includes(q) ||
-        moduleName.includes(q) ||
-        p.razorpay_order_id?.toLowerCase().includes(q) ||
-        p.userId?.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  const filtered = payments
+    .filter((p) => {
+      if (filter !== "All" && p.paymentstatus !== filter) return false;
+
+      if (dateFrom) {
+        const from = new Date(dateFrom);
+        from.setHours(0, 0, 0, 0);
+        if (!p.createdAt || new Date(p.createdAt) < from) return false;
+      }
+      if (dateTo) {
+        const to = new Date(dateTo);
+        to.setHours(23, 59, 59, 999);
+        if (!p.createdAt || new Date(p.createdAt) > to) return false;
+      }
+
+      if (search) {
+        const q = search.toLowerCase();
+        const userName = (userMap[p.userId] || "").toLowerCase();
+        const moduleName = (subjectMap[p.SubjectId] || "").toLowerCase();
+        return (
+          userName.includes(q) ||
+          moduleName.includes(q) ||
+          p.razorpay_order_id?.toLowerCase().includes(q) ||
+          p.userId?.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
 
   if (loading) return <div className="text-gray-500 text-sm">Loading payments...</div>;
   if (error) return <div className="text-red-600 text-sm">Error: {error}</div>;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Payments</h1>
-          <p className="text-sm text-gray-500 mt-1">{payments.length} total transactions</p>
+          <p className="text-sm text-gray-500 mt-1">{filtered.length} of {payments.length} transactions</p>
         </div>
-        <div className="flex gap-3">
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-5">
+        <input
+          type="text"
+          placeholder="Search user, module, order..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-56 focus:outline-none focus:ring-2 focus:ring-primary/50"
+        />
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+        >
+          {statusFilters.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-500">From</label>
           <input
-            type="text"
-            placeholder="Search user, module, order..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-56 focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            {statusFilters.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+          />
         </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-500">To</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+          />
+        </div>
+        {(dateFrom || dateTo || filter !== "All" || search) && (
+          <button
+            onClick={() => { setDateFrom(""); setDateTo(""); setFilter("All"); setSearch(""); }}
+            className="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200">

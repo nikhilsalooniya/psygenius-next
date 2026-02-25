@@ -224,7 +224,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
               </thead>
               <tbody>
                 {userPayments.map((p) => {
-                  const amt = p.currency === "INR" ? p.amount / 100 : p.amount;
+                  const amt = p.currency === "INR" ? Number(p.amount) / 100 : Number(p.amount);
                   const symbol = p.currency === "INR" ? "\u20B9" : p.currency === "EUR" ? "\u20AC" : "$";
                   return (
                     <tr key={p.razorpay_order_id} className="border-b border-gray-100">
