@@ -12,7 +12,7 @@ export default function AgbPage() {
       </Link>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-1">Nutzungsbedingungen</h1>
-      <p className="text-sm text-gray-400 italic mb-8">Beta-Version</p>
+
 
       <div className="space-y-8 text-gray-700">
 
